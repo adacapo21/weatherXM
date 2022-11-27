@@ -5,8 +5,8 @@ import { catchError, firstValueFrom, of } from 'rxjs';
 import { DevicesService } from '../devices/devices.service';
 import { WeatherDeviceDto } from '../dto/weather-device.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { CurrentWeatherDto } from '../devices/dto/current-weather.dto';
-import { Device } from '../devices/schema/devices.schema';
+import { CurrentWeatherDto } from '../dto/current-weather.dto';
+import { Device } from '../devices/devices.schema';
 
 export interface Location {
   lat: string;
@@ -37,7 +37,8 @@ export class WeatherDeviceService {
     private httpService: HttpService,
     private devicesService: DevicesService
   ) {}
-
+  
+  /** Get Devices from /devices endpoint **/
   async getWeatherDevicesFromEndpoint(): Promise<WeatherDeviceDto[]> {
     const apiUrl = this.config.get('URL_WEATHER_XM');
     const request = this.httpService
@@ -70,13 +71,14 @@ export class WeatherDeviceService {
     return devices;
   }
 
-  // save devices to DB
+  /** Save devices to DB in Application start **/
   async saveDevices(): Promise<WeatherDeviceDto[]> {
     const devices = await this.getWeatherDevicesFromEndpoint();
     await this.devicesService.insertBulk(devices);
     return devices;
   }
-
+  
+  /** Get Device from /devices/deviceId endpoint **/
   async getDeviceByIdFromEndpoint(deviceId) {
     const request = this.httpService
       .request({
@@ -108,6 +110,12 @@ export class WeatherDeviceService {
     return device;
   }
 
+  /**
+   *     Cron each minute
+   *     GET all devices from DB
+   *     Call endpoint devices/deviceId - getDeviceByIdFromEndpoint
+   *     Update Device Current Weather
+   *     **/
   @Cron(CronExpression.EVERY_MINUTE)
   async retrieveWeatherByDeviceId() {
     // get devices from DB
@@ -130,11 +138,6 @@ export class WeatherDeviceService {
       );
     }
     
-    // update current weather for each device in another collection in DB
-    // getWeatherDevices and hold Device IDS
-    // find ALL device Ids - query devicesModel
-    // update device current weather
-
-    return devicesDB;
+   return devicesDB;
   }
 }

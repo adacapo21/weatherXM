@@ -31,7 +31,7 @@ Main Services included in this project:
 Docker has two images, one for the application and one for MongoDB.
 Application is supposed to run after this command
 ``` 
-docker-compose up -d --build
+docker-compose up -d --build .
 ```
 
 ## Installation (local Environment)

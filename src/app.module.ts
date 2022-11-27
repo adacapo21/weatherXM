@@ -6,7 +6,7 @@ import { WeatherDeviceService } from './services/weather-device.service';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { DevicesService } from './devices/devices.service';
-import { Device, DeviceSchema } from './devices/schema/devices.schema';
+import { Device, DeviceSchema } from './devices/devices.schema';
 
 @Module({
   imports: [

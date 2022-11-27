@@ -1,19 +1,15 @@
 import { Model } from 'mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Device } from './schema/devices.schema';
+import { Device } from './devices.schema';
 
 @Injectable()
 export class DevicesService {
   constructor(@InjectModel(Device.name) private deviceModel: Model<Device>) {}
-  create(device: Device): Promise<Device> {
-    return new this.deviceModel(device).save();
-  }
+  
   async insertBulk(device: Device[]) {
     const options = { ordered: true };
-    const devices = await this.deviceModel.insertMany(device, options);
-    console.log('Devices inserted to DB', devices);
-    // await this.deviceModel.deleteMany({}, options);
+    return await this.deviceModel.insertMany(device, options);
   }
 
   findAll(): Promise<Device[]> {
@@ -30,7 +26,6 @@ export class DevicesService {
   }
 
   async findOne(id: number): Promise<Device> {
-    console.log(id);
     const device = await this.deviceModel.findById({ _id: id }).exec();
 
     if (!device) {
@@ -48,9 +43,5 @@ export class DevicesService {
       throw new NotFoundException(`Device #${id} is not found`);
     }
     return updatedDevice;
-  }
-
-  remove(id: string) {
-    return this.deviceModel.findByIdAndDelete({ _id: id });
   }
 }
