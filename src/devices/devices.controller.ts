@@ -8,7 +8,7 @@ import {
   Delete
 } from '@nestjs/common';
 import { DevicesService } from './devices.service';
-import { Device } from './devices.schema';
+import { Device } from './schema/devices.schema';
 
 @Controller('devices')
 export class DevicesController {

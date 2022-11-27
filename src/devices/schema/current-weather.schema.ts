@@ -3,23 +3,23 @@ import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { Document } from 'mongoose';
 
 @Schema()
-@ApiTags('posts')
-export class Posts extends Document {
+@ApiTags('current_weather')
+export class Weather extends Document {
   @Prop()
   @ApiProperty()
-  id: string;
-
+  timestamp: Date;
+  
   @Prop()
   @ApiProperty()
-  userId: number;
-
+  temperature: number;
+  
   @Prop()
   @ApiProperty()
-  title: string;
-
+  humidity: number;
+  
   @Prop()
   @ApiProperty()
-  body: string;
+  precipitation: number;
 }
 
-export const PostSchema = SchemaFactory.createForClass(Posts);
+export const CurrentWeatherSchema = SchemaFactory.createForClass(Weather);

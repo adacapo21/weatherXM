@@ -6,7 +6,7 @@ import { DevicesService } from '../devices/devices.service';
 import { WeatherDeviceDto } from '../dto/weather-device.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { CurrentWeatherDto } from '../devices/dto/current-weather.dto';
-import { Device } from '../devices/devices.schema';
+import { Device } from '../devices/schema/devices.schema';
 
 export interface Location {
   lat: string;
