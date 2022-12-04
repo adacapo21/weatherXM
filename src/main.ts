@@ -10,14 +10,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger
   });
-  
+
   const config = new DocumentBuilder()
     .setTitle('Weather XM')
     .setDescription('The Weather XM API description')
     .setVersion('1.0')
     .addTag('Weather XM')
     .build();
-  
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 

@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Body,
-  Patch,
-  Param
-} from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param } from '@nestjs/common';
 import { DevicesService } from './devices.service';
 import { Device } from './devices.schema';
 
@@ -18,8 +12,8 @@ export class DevicesController {
   }
 
   @Get(':id')
-  findOne(device: Device) {
-    return this.devicesService.findByDevice(device);
+  findOne(@Param('id') id: string) {
+    return this.devicesService.findOne(id);
   }
 
   @Patch(':id')

@@ -7,12 +7,12 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .env:/app/.env
+      - .env.docker:/app/.env.docker
       - ./:/app
     ports:
       - '3000:3000'
     env_file:
-      - .env
+      - .env.docker
     depends_on:
       - mongodb
 

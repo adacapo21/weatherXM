@@ -1,30 +1,12 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { catchError, firstValueFrom, of } from 'rxjs';
+import { catchError, firstValueFrom } from 'rxjs';
 import { DevicesService } from '../devices/devices.service';
 import { WeatherDeviceDto } from '../dto/weather-device.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { CurrentWeatherDto } from '../dto/current-weather.dto';
-import { Device } from '../devices/devices.schema';
-
-export interface Location {
-  lat: string;
-  lon: string;
-}
-export interface currentWeather {
-  timestamp: Date;
-  temperature: number;
-  humidity: number;
-  precipitation: number;
-  [key: string]: any;
-}
-
-export interface device {
-  id: string;
-  name: string;
-  current_weather: CurrentWeatherDto;
-}
+import { CurrentWeatherService } from '../current-weather/current-weather.service';
+import { CurrentWeather } from '../current-weather/current-weather.schema';
 
 @Injectable()
 export class WeatherDeviceService {
@@ -35,9 +17,10 @@ export class WeatherDeviceService {
   constructor(
     private config: ConfigService,
     private httpService: HttpService,
-    private devicesService: DevicesService
+    private devicesService: DevicesService,
+    private currentWeatherService: CurrentWeatherService
   ) {}
-  
+
   /** Get Devices from /devices endpoint **/
   async getWeatherDevicesFromEndpoint(): Promise<WeatherDeviceDto[]> {
     const apiUrl = this.config.get('URL_WEATHER_XM');
@@ -75,9 +58,15 @@ export class WeatherDeviceService {
   async saveDevices(): Promise<WeatherDeviceDto[]> {
     const devices = await this.getWeatherDevicesFromEndpoint();
     await this.devicesService.insertBulk(devices);
+    for (const device of devices) {
+      device.current_weather.id = device.id;
+      await this.currentWeatherService.createCurrentWeather(
+        <CurrentWeather>device.current_weather
+      );
+    }
     return devices;
   }
-  
+
   /** Get Device from /devices/deviceId endpoint **/
   async getDeviceByIdFromEndpoint(deviceId) {
     const request = this.httpService
@@ -111,11 +100,11 @@ export class WeatherDeviceService {
   }
 
   /**
-   *     Cron each minute
-   *     GET all devices from DB
-   *     Call endpoint devices/deviceId - getDeviceByIdFromEndpoint
-   *     Update Device Current Weather
-   *     **/
+   *  Cron each minute
+   *  GET all devices from DB
+   *  Call endpoint devices/deviceId - getDeviceByIdFromEndpoint
+   *  Update Device Current Weather
+   *  **/
   @Cron(CronExpression.EVERY_MINUTE)
   async retrieveWeatherByDeviceId() {
     // get devices from DB
@@ -126,18 +115,27 @@ export class WeatherDeviceService {
       );
     }
 
-    const devicesIds = devicesDB.map((device) => device.id);
-    
     for (const deviceDB of devicesDB) {
-      // call endpoint for each device id (for loop)
-      const device = await this.getDeviceByIdFromEndpoint(deviceDB.id);
-      // save or update device with NEW data
-      await this.devicesService.updateDeviceById(
-        deviceDB.id,
-        device
-      );
+      try {
+        const deviceByIdFromEndpoint = await this.getDeviceByIdFromEndpoint(
+          deviceDB.id
+        );
+        await this.devicesService.updateDeviceById(
+          deviceDB.id,
+          deviceByIdFromEndpoint
+        );
+        // save or update device with NEW current weather data
+        await this.currentWeatherService.updateCurrentWeather(
+          deviceDB.id,
+          deviceByIdFromEndpoint.current_weather
+        );
+      } catch {
+        throw new WeatherDeviceService.errors.RequestFailed(
+          `Failed to get Device ${deviceDB.id}`
+        );
+      }
     }
-    
-   return devicesDB;
+
+    return devicesDB;
   }
 }

@@ -4,6 +4,10 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CurrentWeatherDto {
   @Prop()
   @ApiProperty()
+  id: string;
+
+  @Prop()
+  @ApiProperty()
   timestamp: Date;
 
   @Prop()
