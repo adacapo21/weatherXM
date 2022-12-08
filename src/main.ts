@@ -20,7 +20,14 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-
+  
+  console.log(
+      '* Bootstrap MAIN *',
+      process.env.MONGO_URL, + '\n' +
+      process.env.NODE_ENV, + '\n' +
+      process.env.URL_WEATHER_XM, + '\n' +
+      process.env.MONGO_URI
+  );
   await app.listen(PORT, () => {
     logger.log('Check WeatherXM API on http://localhost:3000/api');
   });

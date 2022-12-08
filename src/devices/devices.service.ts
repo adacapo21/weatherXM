@@ -13,21 +13,12 @@ export class DevicesService {
     return await this.deviceModel.insertMany(device, options);
   }
 
-  findAll(): Promise<Device[]> {
+  findAll(): Promise<WeatherDeviceDto[]> {
     return this.deviceModel.find().exec();
   }
 
-  async findByDevice(id) {
-    const foundDevice = await this.deviceModel.find({ id: id });
-
-    if (!foundDevice) {
-      throw new NotFoundException(`Device #${id} is not found`);
-    }
-    return foundDevice;
-  }
-
-  async findOne(id: string): Promise<Device> {
-    const device = await this.deviceModel.findById({ id: id }).exec();
+  async findOne(id: string): Promise<WeatherDeviceDto> {
+    const device = await this.deviceModel.findOne({ id: id }).exec()
 
     if (!device) {
       throw new NotFoundException(`Device #${id} is not found`);

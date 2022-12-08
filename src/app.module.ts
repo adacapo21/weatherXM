@@ -14,17 +14,17 @@ import {
 import { CurrentWeatherModule } from './current-weather/current-weather.module';
 import { CurrentWeatherService } from './current-weather/current-weather.service';
 
+console.log(process.env.NODE_ENV)
 //const uri = "mongodb+srv://weather-xm:${process.env.MONGO_ATLAS_PASSWORD}@cluster0.sskj7yy.mongodb.net/?retryWrites=true&w=majority";
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: `${process.cwd()}/.env.${process.env.NODE_ENV}`,
-      isGlobal: true
+      envFilePath: `${process.cwd()}/.env.${process.env.NODE_ENV}`
     }),
     DevicesModule,
     CurrentWeatherModule,
     HttpModule,
-    MongooseModule.forRoot(`${process.env.MONGO_URL}`),
+    MongooseModule.forRoot(process.env.MONGO_URL),
     MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
     MongooseModule.forFeature([
       { name: CurrentWeather.name, schema: CurrentWeatherSchema }
@@ -46,11 +46,6 @@ export class AppModule implements OnApplicationBootstrap {
     private readonly config: ConfigService
   ) {}
   async onApplicationBootstrap() {
-    console.log(
-      '*** onApplicationBootstrap ***',
-      process.env.MONGO_URL,
-      process.env.URL_WEATHER_XM
-    );
     await this.weatherDeviceService.saveDevices();
   }
 }

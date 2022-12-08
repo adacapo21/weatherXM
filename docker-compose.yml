@@ -2,25 +2,35 @@ version: '3'
 
 services:
   weather-xm:
-    container_name: weather-xm
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - .env.docker:/app/.env.docker
-      - ./:/app
-    ports:
-      - '3000:3000'
-    env_file:
-      - .env.docker
     depends_on:
       - mongodb
+#    restart: always
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URL=mongodb://weatherXMDocker
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
 
   mongodb:
-    image: mongo
-    restart: always
+    image: mongo:latest
+    container_name: weatherXMDocker
+    env_file:
+      - .env.docker
     ports:
-      - 27017:27017
-    environment:
-      MONGODB_DATABASE: weather-xm
+      - '27017:27017'
+    volumes:
+      - mongodata:/data/db
+
+  nginx:
+    build: ./nginx
+    ports:
+      - '80:80'
+    depends_on:
+      - weather-xm
+
+volumes:
+  mongodata:
 

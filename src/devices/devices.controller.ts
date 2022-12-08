@@ -1,6 +1,6 @@
 import { Controller, Get, Body, Patch, Param } from '@nestjs/common';
 import { DevicesService } from './devices.service';
-import { Device } from './devices.schema';
+import { WeatherDeviceDto } from "../dto/weather-device.dto";
 
 @Controller('devices')
 export class DevicesController {
@@ -17,7 +17,7 @@ export class DevicesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() device: Device) {
+  update(@Param('id') id: string, @Body() device: WeatherDeviceDto) {
     return this.devicesService.updateDeviceById(id, device);
   }
 }
