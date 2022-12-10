@@ -5,6 +5,7 @@ import { DeviceSchema, Device } from './devices.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CurrentWeather, CurrentWeatherSchema} from "../current-weather/current-weather.schema";
 import { CurrentWeatherService} from "../current-weather/current-weather.service";
+import mongoose from "mongoose";
 
 describe('DevicesService', () => {
   let service: DevicesService;
@@ -44,6 +45,10 @@ describe('DevicesService', () => {
 
     service = module.get<DevicesService>(DevicesService);
   });
+  afterAll(async () => {
+    // Drop the database after all tests
+    await mongoose.connection.close();
+  });
 
   it('should Insert device', async () => {
     const devices = await service.insertBulk([device]);
@@ -54,7 +59,7 @@ describe('DevicesService', () => {
  
   it('should list Devices', async () => {
     const devices = await service.findAll();
-    expect(devices.length).toBe(1)
+    expect(devices.length).toBeGreaterThan(1)
   })
   
   it('Should Find Device by Id', async () => {
