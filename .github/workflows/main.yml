@@ -18,3 +18,5 @@ jobs:
           heroku_app_name: "quiet-beach-83527"
           heroku_email: "aggeloskappos@gmail.com"
           usedocker: true
+        env:
+          NODE_ENV: docker
