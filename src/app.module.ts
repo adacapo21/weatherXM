@@ -13,6 +13,9 @@ import {
 } from './current-weather/current-weather.schema';
 import { CurrentWeatherModule } from './current-weather/current-weather.module';
 import { CurrentWeatherService } from './current-weather/current-weather.service';
+import { AppConfigService } from './app.config.service';
+
+
 
 console.log(
   '****APP MODULE****',
@@ -41,8 +44,10 @@ console.log(
     ConfigService,
     HttpModule,
     DevicesService,
-    CurrentWeatherService
-  ]
+    CurrentWeatherService,
+    AppConfigService
+  ],
+  exports: [AppConfigService]
 })
 export class AppModule implements OnApplicationBootstrap {
   constructor(
