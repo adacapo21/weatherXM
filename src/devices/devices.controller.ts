@@ -1,6 +1,6 @@
 import { Controller, Get, Body, Patch, Param } from '@nestjs/common';
 import { DevicesService } from './devices.service';
-import { WeatherDeviceDto } from "../dto/weather-device.dto";
+import { WeatherDeviceDto } from '../dto/weather-device.dto';
 
 @Controller('devices')
 export class DevicesController {

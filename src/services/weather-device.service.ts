@@ -1,12 +1,12 @@
-import {HttpException, Injectable, Logger} from '@nestjs/common';
-import {HttpService} from '@nestjs/axios';
-import {ConfigService} from '@nestjs/config';
-import {catchError, firstValueFrom} from 'rxjs';
-import {DevicesService} from '../devices/devices.service';
-import {WeatherDeviceDto} from '../dto/weather-device.dto';
-import {Cron, CronExpression} from '@nestjs/schedule';
-import {CurrentWeatherService} from '../current-weather/current-weather.service';
-import {CurrentWeather} from '../current-weather/current-weather.schema';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
+import { catchError, firstValueFrom } from 'rxjs';
+import { DevicesService } from '../devices/devices.service';
+import { WeatherDeviceDto } from '../dto/weather-device.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { CurrentWeatherService } from '../current-weather/current-weather.service';
+import { CurrentWeather } from '../current-weather/current-weather.schema';
 
 @Injectable()
 export class WeatherDeviceService {
@@ -58,24 +58,26 @@ export class WeatherDeviceService {
 
   /** Save devices to DB in Application start **/
   async saveDevices(): Promise<WeatherDeviceDto[] | void> {
-    return await this.getWeatherDevicesFromEndpoint().then((devices) => {
+    return await this.getWeatherDevicesFromEndpoint()
+      .then((devices) => {
         this.devicesService.insertBulk(devices);
         for (const device of devices) {
-            device.current_weather.id = device.id;
-            this.currentWeatherService.createCurrentWeather(
-                <CurrentWeather>device.current_weather
-            );
+          device.current_weather.id = device.id;
+          this.currentWeatherService.createCurrentWeather(
+            <CurrentWeather>device.current_weather
+          );
         }
         return devices;
-    }).catch((error)=> {
+      })
+      .catch((error) => {
         Logger.error(`${error.message}!\t`);
-    });
+      });
   }
 
   /** Get Device from /devices/deviceId endpoint **/
   async getDeviceByIdFromEndpoint(deviceId) {
-      const apiUrl = this.config.get('URL_WEATHER_XM');
-      const request = this.httpService
+    const apiUrl = this.config.get('URL_WEATHER_XM');
+    const request = this.httpService
       .request({
         url: `${apiUrl}/${deviceId}`,
         method: 'get',
@@ -93,16 +95,16 @@ export class WeatherDeviceService {
           );
         })
       );
-      const device = await firstValueFrom(request)
-        .then((res) => {
-            return res.data;
-        })
-        .catch((e) => {
-            Logger.error(`${e.name}! ` + e.message);
-        });
+    const device = await firstValueFrom(request)
+      .then((res) => {
+        return res.data;
+      })
+      .catch((e) => {
+        Logger.error(`${e.name}! ` + e.message);
+      });
     if (!device) {
       throw new WeatherDeviceService.errors.RequestFailed(
-          `Failed to get Device with id ${deviceId}`
+        `Failed to get Device with id ${deviceId}`
       );
     }
     return device;
@@ -126,21 +128,18 @@ export class WeatherDeviceService {
 
     for (const deviceDB of devicesDB) {
       try {
-        await this.getDeviceByIdFromEndpoint(
-            deviceDB.id
-        ).then((deviceById) => {
-            this.devicesService.updateDeviceById(
-                deviceDB.id,
-                deviceById
-            );
+        await this.getDeviceByIdFromEndpoint(deviceDB.id)
+          .then((deviceById) => {
+            this.devicesService.updateDeviceById(deviceDB.id, deviceById);
             // save or update device with NEW current weather data
             this.currentWeatherService.updateCurrentWeather(
-                deviceDB.id,
-                deviceById.current_weather
+              deviceDB.id,
+              deviceById.current_weather
             );
-        }).catch((error) => {
+          })
+          .catch((error) => {
             Logger.error(error.message);
-        });
+          });
       } catch {
         throw new WeatherDeviceService.errors.RequestFailed(
           `Failed to get Device ${deviceDB.id}`

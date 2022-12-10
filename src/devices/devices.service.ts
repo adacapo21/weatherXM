@@ -18,7 +18,7 @@ export class DevicesService {
   }
 
   async findOne(id: string): Promise<WeatherDeviceDto> {
-    const device = await this.deviceModel.findOne({ id: id }).exec()
+    const device = await this.deviceModel.findOne({ id: id }).exec();
 
     if (!device) {
       throw new NotFoundException(`Device #${id} is not found`);

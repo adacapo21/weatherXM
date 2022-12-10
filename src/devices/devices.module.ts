@@ -17,13 +17,7 @@ import { CurrentWeatherController } from '../current-weather/current-weather.con
       { name: CurrentWeather.name, schema: CurrentWeatherSchema }
     ])
   ],
-  controllers: [
-    DevicesController,
-    CurrentWeatherController
-  ],
-  providers: [
-    DevicesService,
-    CurrentWeatherService
-  ]
+  controllers: [DevicesController, CurrentWeatherController],
+  providers: [DevicesService, CurrentWeatherService]
 })
 export class DevicesModule {}

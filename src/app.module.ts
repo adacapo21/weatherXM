@@ -14,8 +14,12 @@ import {
 import { CurrentWeatherModule } from './current-weather/current-weather.module';
 import { CurrentWeatherService } from './current-weather/current-weather.service';
 
-console.log(process.env.NODE_ENV)
-//const uri = "mongodb+srv://weather-xm:${process.env.MONGO_ATLAS_PASSWORD}@cluster0.sskj7yy.mongodb.net/?retryWrites=true&w=majority";
+console.log(
+  '****APP MODULE****',
+  process.env.NODE_ENV,
+  '***MONGO URL***',
+  process.env.MONGO_URL
+);
 @Module({
   imports: [
     ConfigModule.forRoot({

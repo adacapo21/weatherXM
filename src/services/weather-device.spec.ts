@@ -62,7 +62,7 @@ describe('DevicesService',  () => {
         const module: TestingModule = await Test.createTestingModule({
             imports: [
                 HttpModule,
-                MongooseModule.forRoot('mongodb://localhost:27017/weatherXMTest'),
+                MongooseModule.forRoot('mongodb://localhost:27017/weatherXM_Test'),
                 MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
                 MongooseModule.forFeature([
                     { name: CurrentWeather.name, schema: CurrentWeatherSchema }
